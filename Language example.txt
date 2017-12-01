@@ -1,0 +1,35 @@
+
+-> (numIn ! result) until
+		->
+			:
+			terminate!
+			('Correct')nloutput
+		is == result:
+			terminate!
+			('Try again!')nloutput
+			('Guess is too low')nloutput
+		is << result:
+
+			terminate!
+			('Try again!')nloutput
+			('Guess is too high')nloutput
+		is >> result:
+
+		<-(numIn) decision
+
+		(numIn)userinput
+
+		('Guess a number')nloutput
+
+<- execute
+
+->
+
+(number1**number2) ++ result ==> result
+
+<-(i++i ==> i; i < 10; 0 ==> i decimal) for
+
+0 ==> numIn decimal
+0 ==> result decimal
+10 ==> number1 decimal constant
+20 ==> number2 decimal constant
