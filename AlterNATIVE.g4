@@ -25,18 +25,21 @@ grammar AlterNATIVE ;
 stmt :
 	printstmt
 	| funcall
-	| boolstmt
-	| expression
+	| ifstmt
 	| loop
+	| inputstmt
 	;
 
 block :
 	RARROW stmt* LARROW
 	;
 
+//TO-DO: CHECK if I can print floats....
 printstmt :
-	LPARENS value RPARENS PRINTLN 
-	| LPARENS value RPARENS PRINT
+	LPARENS SINGLEQUOTE operand SINGLEQUOTE RPARENS (PRINTLN|PRINT) 
+	;
+inputstmt:
+	LPARENS variable RPARENS INPUT
 	;
 
 funcall :
@@ -49,29 +52,38 @@ funcall :
 booleanop :
 	operand LT operand
 	| operand GT operand
-	| operand LT EQUALS operand
-	| operand GT EQUALS operand
-	| operand EQUALS EQUALS operand
-	| operand EXCLAIM EQUALS operand
+	| operand LT REQUALS operand
+	| operand GT REQUALS operand
+	| operand BOOLEQUALS operand
+	| operand EXCLAIM REQUALS operand
 	;
 
-boolstmt :
-	'if' booleanop (logic_connector booleanop)* 'then' stmt
+ifstmt :
+	block LPARENS boolstmt RPARENS 'if'
+	;
+boolstmt:
+	(booleanop logic_connector)* booleanop
 	;
 
 logic_connector:
 	OR
 	|AND
 	;
+operations:
+	number_operation
+	|string_operation
+	|bool operation
+	;
 
-operation :
+number_operation :
 	operand MUL operand # multiply
    | operand DIV operand # divide
    | operand ADD operand # add
    | operand SUB operand # subtract
    | operand POW operand # toPower
    | operand MOD operand # modulo
-   | operand 
+   | variable INC		 # increment_by_1
+   | variable DEC  		 # decrements_by_1
    ;
 
 loop :
@@ -81,20 +93,22 @@ loop :
 	;
 	
 forloop :
-	block (LPARENS assignment SEMICOLON booleanop SEMICOLON declaration RPARENS) FORTYPE
+	block (LPARENS (assignment|number_operation) SEMICOLON booleanop SEMICOLON declaration RPARENS) FORTYPE
 	;
 whileloop:
 	block (LPARENS booleanop WHILETYPE RPARENS)
 	;
-	
+dountil:
+	RARROW booleanop 'until' stmt* LARROW 'execute'
+	;
 
 operand :
 	value | variable
    ;
 
-expression :
-	LPARENS? (operation | booleanop) RPARENS?
-   ;
+//expression :
+//	LPARENS (operations | booleanop) RPARENS
+//   ;
 
 value :
 	NUMBER
@@ -110,16 +124,18 @@ variable :
 	UNDERSCORE? LETTER (LETTER | DIGIT | UNDERSCORE)*
    ;
 
+//Declare new variables. Constant is optional, variable type necessary.
 declaration :
-	operand ASSIGNMENTOPERATOR variable var_type
+	operand ASSIGNMENTOPERATOR variable var_type CONST?
    ;
    
+//Assign value to already existing variable
 assignment :
 	operand ASSIGNMENTOPERATOR variable
    ;
 
 
-ASSIGNMENTOPERATOR: EQUALS ;
+ASSIGNMENTOPERATOR: REQUALS ;
 VALUE : [STRING NUMBER] ;
 STRING : DOUBLEQUOTE [LETTER EQUALS GT WS NUMBER ' ']+ DOUBLEQUOTE ;
 NUMBER : [FLOAT SHORTFLOAT] ;
@@ -134,8 +150,11 @@ fragment
 DIGIT : [0-9] ;
 OR: 'or';
 AND: 'and';
+CONST: 'constant';
 WHITESPACE : [' '\t\r\n] -> skip ;
-EQUALS : '==>' ;
+REQUALS : '==>' ;
+LEQUALS : '<==';
+BOOLEQUALS : '<==>';
 DOUBLEQUOTE : '"' ;
 SINGLEQUOTE : '\'' ;
 MINUS : '-' ;
@@ -156,12 +175,15 @@ DIV : '//' ;
 ADD : '++' ;
 SUB : '--' ;
 MOD : '%%' ;
-INC : ADD EQUALS;
+INC : LEQUALS ADD;
+DEC : LEQUALS SUB;
 COLON : ':' ;
 PRINTLN : 'nloutput';
 PRINT : 'output';
+INPUT : 'userinput';
 STRINGTYPE : 'rope';
 FLOATTYPE : 'decimal';
 FORTYPE: 'for';
 WHILETYPE: 'as long as';
+
 
