@@ -1,33 +1,13 @@
-// Fragments of the original program
-/*
 
-[age]
-   print
-   input "enter your age in years 50-99: ";a
-   if a<50 or a>99 then print:print " ===> age is outside of accepted parameters":goto [age]
-
-bmi=int(((p*703)/(i^2))+.5)
-
-x=bmi
-
-*/
 grammar AlterNATIVE ;
 
-//block :
-//	label stmt+	COLON 'goto' label
-//	;
-//
-//label :
-//	LSQBRKT variable RSQBRKT
-//	;
-//
-
 stmt :
-	printstmt
+	print_stmt
 	| funcall
-	| ifstmt
+	| if_stmt
+	| case_stmt
 	| loop
-	| inputstmt
+	| input_stmt
 	;
 
 block :
@@ -35,34 +15,33 @@ block :
 	;
 
 //TO-DO: CHECK if I can print floats....
-printstmt :
+print_stmt :
 	LPARENS SINGLEQUOTE operand SINGLEQUOTE RPARENS (PRINTLN|PRINT) 
 	;
-inputstmt:
+input_stmt:
 	LPARENS variable RPARENS INPUT
 	;
-
+case_stmt:
+	RARROW case_block+ LARROW LPARENS operand RPARENS 'check'
+	;
+case_block:
+	'terminate' EXCLAIM stmt* COLON case_condition
+	;
+case_condition:
+	('is' bool_operator operand)
+	|'by default'
+	;
+	
 funcall :
 	STRING operand?
 	| STRING operand (SEMICOLON operand)+
 	;
 
-
-
-booleanop :
-	operand LT operand
-	| operand GT operand
-	| operand LT REQUALS operand
-	| operand GT REQUALS operand
-	| operand BOOLEQUALS operand
-	| operand EXCLAIM REQUALS operand
+if_stmt :
+	block LPARENS bool_stmt RPARENS 'if'
 	;
-
-ifstmt :
-	block LPARENS boolstmt RPARENS 'if'
-	;
-boolstmt:
-	(booleanop logic_connector)* booleanop
+bool_stmt:
+	(bool_operation logic_connector)* bool_operation
 	;
 
 logic_connector:
@@ -72,7 +51,7 @@ logic_connector:
 operations:
 	number_operation
 	|string_operation
-	|bool operation
+	|bool_operation
 	;
 
 number_operation :
@@ -86,6 +65,23 @@ number_operation :
    | variable DEC  		 # decrements_by_1
    ;
 
+string_operation :
+	(STRING|variable) (ADD (value|variable))+ # concatinate_string
+	;
+
+bool_operation :
+	operand bool_operator operand
+	;
+
+bool_operator:
+	LT
+	|GT
+	|LT REQUALS
+	|GT REQUALS
+	|BOOLEQUALS
+	|EXCLAIM REQUALS
+	;
+
 loop :
 	forloop
 	|whileloop
@@ -93,22 +89,18 @@ loop :
 	;
 	
 forloop :
-	block (LPARENS (assignment|number_operation) SEMICOLON booleanop SEMICOLON declaration RPARENS) FORTYPE
+	block (LPARENS (number_operation ASSIGNMENTOPERATOR variable) SEMICOLON bool_operation SEMICOLON declaration RPARENS) FORTYPE
 	;
 whileloop:
-	block (LPARENS booleanop WHILETYPE RPARENS)
+	block (LPARENS bool_operation WHILETYPE RPARENS)
 	;
 dountil:
-	RARROW booleanop 'until' stmt* LARROW 'execute'
+	RARROW bool_operation 'until' stmt* LARROW 'execute'
 	;
 
 operand :
 	value | variable
    ;
-
-//expression :
-//	LPARENS (operations | booleanop) RPARENS
-//   ;
 
 value :
 	NUMBER
@@ -132,6 +124,7 @@ declaration :
 //Assign value to already existing variable
 assignment :
 	operand ASSIGNMENTOPERATOR variable
+	|operations ASSIGNMENTOPERATOR variable
    ;
 
 

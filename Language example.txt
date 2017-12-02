@@ -1,21 +1,22 @@
 
 -> (numIn ! result) until
 		->
-			:
+
 			terminate!
 			('Correct')nloutput
-		is == result:
+		:is == result:
+
 			terminate!
 			('Try again!')nloutput
 			('Guess is too low')nloutput
-		is << result:
+		:is << result
 
 			terminate!
 			('Try again!')nloutput
 			('Guess is too high')nloutput
-		is >> result:
+		:is >> result
 
-		<-(numIn) decision
+		<-(numIn) check
 
 		(numIn)userinput
 
