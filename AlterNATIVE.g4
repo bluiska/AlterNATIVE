@@ -1,6 +1,13 @@
 
 grammar AlterNATIVE ;
 
+program:
+	 function* ('END' stmt* 'BEGIN')
+	;
+
+function:
+	block LABEL
+
 stmt :
 	print_stmt
 	| funcall
@@ -32,10 +39,10 @@ case_condition:
 	|'by default'
 	;
 	
-funcall :
-	STRING operand?
-	| STRING operand (SEMICOLON operand)+
-	;
+//funcall :
+//	STRING operand?
+//	| STRING operand (SEMICOLON operand)+
+//	;
 
 if_stmt :
 	block LPARENS bool_stmt RPARENS 'if'
@@ -89,10 +96,10 @@ loop :
 	;
 	
 forloop :
-	block (LPARENS (number_operation ASSIGNMENTOPERATOR variable) SEMICOLON bool_operation SEMICOLON declaration RPARENS) FORTYPE
+	block (LPARENS (number_operation ASSIGNMENTOPERATOR variable) SEMICOLON bool_operation SEMICOLON declaration RPARENS) FOR
 	;
 whileloop:
-	block (LPARENS bool_operation WHILETYPE RPARENS)
+	block (LPARENS bool_operation WHILE RPARENS)
 	;
 dountil:
 	RARROW bool_operation 'until' stmt* LARROW 'execute'
@@ -105,11 +112,13 @@ operand :
 value :
 	NUMBER
    | STRING
+   | BOOL
    ;
 
 var_type:
 	FLOATTYPE
 	|STRINGTYPE
+	|BOOLTYPE
 	;
 		
 variable :
@@ -130,12 +139,18 @@ assignment :
 
 ASSIGNMENTOPERATOR: REQUALS ;
 VALUE : [STRING NUMBER] ;
-STRING : DOUBLEQUOTE [LETTER EQUALS GT WS NUMBER ' ']+ DOUBLEQUOTE ;
-NUMBER : [FLOAT SHORTFLOAT] ;
+STRING : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
+NUMBER : [FLOAT SHORTFLOAT];
+BOOL: TRUE|FALSE;
+TRUE: 'true';
+FALSE: 'false';
+//Any standard ASCII char (that's readable, inc. space)
+CHARACTER: [\u0040-\u007E];
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
 SHORTFLOAT : DOT DIGIT+ ;
 UNDERSCORE : '_' ;
 LETTER : LOWERCASE|UPPERCASE;
+LABEL: [LETTER]+;
 fragment
 	UPPERCASE: [A-Z] ;
 fragment
@@ -174,9 +189,12 @@ COLON : ':' ;
 PRINTLN : 'nloutput';
 PRINT : 'output';
 INPUT : 'userinput';
-STRINGTYPE : 'rope';
+STRINGTYPE : 'text';
 FLOATTYPE : 'decimal';
-FORTYPE: 'for';
-WHILETYPE: 'as long as';
+BOOLTYPE : 'logical'
+VOIDTYPE: 'void';
+ARRAYTYPE: LSQBRKT RSQBRKT;
+FOR: 'for';
+WHILE: 'as long as';
 
 
