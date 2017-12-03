@@ -2,12 +2,13 @@
 grammar AlterNATIVE ;
 
 program:
-	 function* ('END' stmt* 'BEGIN')
+	 function_def* ('END' stmt* 'BEGIN')
 	;
 
-function:
-	block LABEL
-
+function_def:
+	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type|VOIDTYPE)
+	;
+	
 stmt :
 	print_stmt
 	| funcall
@@ -20,7 +21,10 @@ stmt :
 block :
 	RARROW stmt* LARROW
 	;
-
+return_block:
+	RARROW RETURN operand stmt* LARROW
+	;
+	
 //TO-DO: CHECK if I can print floats....
 print_stmt :
 	LPARENS SINGLEQUOTE operand SINGLEQUOTE RPARENS (PRINTLN|PRINT) 
@@ -186,12 +190,14 @@ MOD : '%%' ;
 INC : LEQUALS ADD;
 DEC : LEQUALS SUB;
 COLON : ':' ;
+COMMA : ',';
 PRINTLN : 'nloutput';
 PRINT : 'output';
+RETURN: 'return';
 INPUT : 'userinput';
 STRINGTYPE : 'text';
 FLOATTYPE : 'decimal';
-BOOLTYPE : 'logical'
+BOOLTYPE : 'logical';
 VOIDTYPE: 'void';
 ARRAYTYPE: LSQBRKT RSQBRKT;
 FOR: 'for';
