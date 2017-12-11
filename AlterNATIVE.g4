@@ -1,8 +1,15 @@
+//Arrays
+//Array operations
+//Global variables
+//Func call
+//Variable scoping to function
+//Comments
+
 
 grammar AlterNATIVE ;
 
 program:
-	 function_def* ('END' stmt* 'BEGIN')
+	 ('END' stmt* 'BEGIN') function_def* //Global variables
 	;
 
 function_def:
@@ -77,6 +84,7 @@ number_operation :
    ;
 
 string_operation :
+	//Double check if bool can be added to string
 	(STRING|variable) (ADD (value|variable))+ # concatinate_string
 	;
 

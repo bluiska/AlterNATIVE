@@ -1,4 +1,6 @@
 
+END
+
 -> (numIn ! result) until
 		->
 
@@ -28,9 +30,11 @@
 
 (number1**number2) ++ result ==> result
 
-<-(i++i ==> i; i < 10; 0 ==> i decimal) for
+<-(i++i ==> i; i << 10; 0 ==> i decimal) for
 
 0 ==> numIn decimal
 0 ==> result decimal
 10 ==> number1 decimal constant
 20 ==> number2 decimal constant
+
+BEGIN
