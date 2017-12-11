@@ -1,15 +1,16 @@
-//Arrays
+//Arrays - DONE
 //Array operations
-//Global variables
-//Func call
-//Variable scoping to function
+//Global variables - DONE
+//Func call - DONE
+//Variable scoping to function - DONE
 //Comments
+//Using brackets to define precedence - 
 
 
 grammar AlterNATIVE ;
 
 program:
-	 ('END' stmt* 'BEGIN') function_def* //Global variables
+	 ('FINISH' stmt* 'START') function_def* declaration*
 	;
 
 function_def:
@@ -23,6 +24,9 @@ stmt :
 	| case_stmt
 	| loop
 	| input_stmt
+	| assignment
+	| declaration
+	|
 	;
 
 block :
@@ -31,8 +35,18 @@ block :
 return_block:
 	RARROW RETURN operand stmt* LARROW
 	;
-	
-//TO-DO: CHECK if I can print floats....
+funcall:
+	void_funcall|nonvoid_funcall
+	;
+
+void_funcall :
+	LPARENS variable* RPARENS LABEL 'call'
+	;
+nonvoid_funcall :
+	variable? ASSIGNMENTOPERATOR LPARENS variable* RPARENS LABEL 'call'
+	;
+
+
 print_stmt :
 	LPARENS SINGLEQUOTE operand SINGLEQUOTE RPARENS (PRINTLN|PRINT) 
 	;
@@ -49,23 +63,22 @@ case_condition:
 	('is' bool_operator operand)
 	|'by default'
 	;
-	
-//funcall :
-//	STRING operand?
-//	| STRING operand (SEMICOLON operand)+
-//	;
 
 if_stmt :
 	block LPARENS bool_stmt RPARENS 'if'
 	;
+
+	
 bool_stmt:
 	(bool_operation logic_connector)* bool_operation
+	|(nonvoid_funcall logic_connector)* nonvoid_funcall
 	;
 
 logic_connector:
 	OR
 	|AND
 	;
+	
 operations:
 	number_operation
 	|string_operation
@@ -79,12 +92,11 @@ number_operation :
    | operand SUB operand # subtract
    | operand POW operand # toPower
    | operand MOD operand # modulo
-   | variable INC		 # increment_by_1
-   | variable DEC  		 # decrements_by_1
+   | INC variable  		 # increment_by_1
+   | DEC variable   	 # decrements_by_1
    ;
 
 string_operation :
-	//Double check if bool can be added to string
 	(STRING|variable) (ADD (value|variable))+ # concatinate_string
 	;
 
@@ -137,15 +149,18 @@ variable :
 	UNDERSCORE? LETTER (LETTER | DIGIT | UNDERSCORE)*
    ;
 
-//Declare new variables. Constant is optional, variable type necessary.
+//Declare new variables. Constant and array is optional, variable type necessary.
 declaration :
-	operand ASSIGNMENTOPERATOR variable var_type CONST?
+	operand ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
+	|operations ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
+	|nonvoid_funcall ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
    ;
    
 //Assign value to already existing variable
 assignment :
 	operand ASSIGNMENTOPERATOR variable
 	|operations ASSIGNMENTOPERATOR variable
+	|nonvoid_funcall ASSIGNMENTOPERATOR variable
    ;
 
 
@@ -158,6 +173,7 @@ TRUE: 'true';
 FALSE: 'false';
 //Any standard ASCII char (that's readable, inc. space)
 CHARACTER: [\u0040-\u007E];
+ARRAY : LT [DIGIT]+ GT;
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
 SHORTFLOAT : DOT DIGIT+ ;
 UNDERSCORE : '_' ;
@@ -195,8 +211,8 @@ DIV : '//' ;
 ADD : '++' ;
 SUB : '--' ;
 MOD : '%%' ;
-INC : LEQUALS ADD;
-DEC : LEQUALS SUB;
+INC : ADD REQUALS;
+DEC : SUB REQUALS;
 COLON : ':' ;
 COMMA : ',';
 PRINTLN : 'nloutput';
