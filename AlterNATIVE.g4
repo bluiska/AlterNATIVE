@@ -9,18 +9,19 @@
 ```javascript
 
 /*
- *     ___     __   __                   _   __    ___   ______    ____ _    __    ______
+ *  ___     __   __                   _   __    ___   ______    ____ _    __    ______
    /   |   / /  / /_  ___    _____   / | / /   /   | /_  __/   /  _/| |  / /   / ____/
   / /| |  / /  / __/ / _ \  / ___/  /  |/ /   / /| |  / /      / /  | | / /   / __/   
  / ___ | / /  / /_  /  __/ / /     / /|  /   / ___ | / /     _/ /   | |/ /   / /___   
 /_/  |_|/_/   \__/  \___/ /_/     /_/ |_/   /_/  |_|/_/     /___/   |___/   /_____/   
  *
- */
+ *///                                                     created by   Gergo Kekesi
+ //                                                                 ******************                                           
 
 grammar AlterNATIVE ;
 
 program:
-	 ('FINISH' stmt* 'START') function_def* declaration*
+	 ('FINISH' stmt* 'START') (function_def|declaration)*
 	;
 
 function_def:
@@ -37,7 +38,7 @@ stmt :
 	| assignment
 	| declaration
 	| number_functions
-	| array_operations
+	| array_functions
 	;
 
 block :
@@ -47,13 +48,7 @@ return_block:
 	RARROW RETURN operand stmt* LARROW
 	;
 funcall:
-	void_funcall|nonvoid_funcall
-	;
-void_funcall :
 	LPARENS variable* RPARENS LABEL 'call'
-	;
-nonvoid_funcall :
-	(variable ASSIGNMENTOPERATOR)? LPARENS variable* RPARENS LABEL 'call'
 	;
 print_stmt :
 	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT)
@@ -78,23 +73,29 @@ if_stmt :
 
 
 bool_stmt:
-	(bool_operation logic_connector)* bool_operation
-	|(nonvoid_funcall logic_connector)* nonvoid_funcall
+	 LPARENS bool_stmt RPARENS
+	|(bool_operation logic_connector)* (bool_operation|funcall)
+	|(funcall logic_connector)* 
 	;
 
 logic_connector:
-	OR
-	|AND
+	AND
+	|OR
 	;
 
 operations:
 	number_operation
 	|text_operation
 	|bool_operation
+	|array_operation
+	
 	;
-array_operations:
+array_functions:
 	variable LEQUALS variable 'merge'	#merge
 	| variable LEQUALS variable 'join'	#join
+	;
+array_operation:
+	variable ARRAY 				#item_at_index
 	;
 
 number_operation :
@@ -147,6 +148,7 @@ forloop :
 	)
 	'for'
 	;
+	
 whileloop:
 	block (LPARENS bool_stmt RPARENS) WHILE
 	;
@@ -178,16 +180,19 @@ variable :
 
 //Declare new variables. Constant and array is optional, variable type necessary.
 declaration :
-	operand ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
-	|operations ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
-	|nonvoid_funcall ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
+	(operand ASSIGNMENTOPERATOR variable var_type
+	|operations ASSIGNMENTOPERATOR variable var_type
+	|funcall ASSIGNMENTOPERATOR variable var_type 
+	|(funcall|LT GT|LT value (',' value)* GT) ASSIGNMENTOPERATOR variable var_type ARRAY)
+	CONST?
    ;
 
 //Assign value to already existing variable
 assignment :
-	operand ASSIGNMENTOPERATOR variable
+	 (operand ASSIGNMENTOPERATOR variable
 	|operations ASSIGNMENTOPERATOR variable
-	|nonvoid_funcall ASSIGNMENTOPERATOR variable
+	|funcall ASSIGNMENTOPERATOR variable )
+	ARRAY?
    ;
 
 
@@ -205,7 +210,7 @@ COMMENT : '/*' .*? '*/' -> skip ;
 //Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
 CHARACTER: '"' ( '\\"' | . )*? '"' ;
 
-ARRAY : LT [DIGIT]* GT;
+ARRAY : LT [DIGIT]+ GT;
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
 SHORTFLOAT : DOT DIGIT+ ;
 UNDERSCORE : '_' ;
