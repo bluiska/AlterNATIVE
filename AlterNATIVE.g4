@@ -6,6 +6,14 @@
 //Comments
 //Using brackets to define precedence - 
 
+/*
+ *     ___     __   __                   _   __    ___   ______    ____ _    __    ______
+   /   |   / /  / /_  ___    _____   / | / /   /   | /_  __/   /  _/| |  / /   / ____/
+  / /| |  / /  / __/ / _ \  / ___/  /  |/ /   / /| |  / /      / /  | | / /   / __/   
+ / ___ | / /  / /_  /  __/ / /     / /|  /   / ___ | / /     _/ /   | |/ /   / /___   
+/_/  |_|/_/   \__/  \___/ /_/     /_/ |_/   /_/  |_|/_/     /___/   |___/   /_____/   
+ *
+ */
 
 grammar AlterNATIVE ;
 
@@ -14,7 +22,7 @@ program:
 	;
 
 function_def:
-	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type|VOIDTYPE)
+	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type ARRAY?|VOIDTYPE)
 	;
 	
 stmt :
@@ -26,7 +34,8 @@ stmt :
 	| input_stmt
 	| assignment
 	| declaration
-	|
+	| number_functions
+	| array_operations	
 	;
 
 block :
@@ -48,7 +57,7 @@ nonvoid_funcall :
 
 
 print_stmt :
-	LPARENS SINGLEQUOTE operand SINGLEQUOTE RPARENS (PRINTLN|PRINT) 
+	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT) 
 	;
 input_stmt:
 	LPARENS variable RPARENS INPUT
@@ -81,23 +90,32 @@ logic_connector:
 	
 operations:
 	number_operation
-	|string_operation
+	|text_operation
 	|bool_operation
+	;
+array_operations:
+	variable LEQUALS variable 'merge'	#merge
+	| variable LEQUALS variable 'join'	#join
 	;
 
 number_operation :
-	operand MUL operand # multiply
-   | operand DIV operand # divide
-   | operand ADD operand # add
-   | operand SUB operand # subtract
-   | operand POW operand # toPower
-   | operand MOD operand # modulo
-   | INC variable  		 # increment_by_1
-   | DEC variable   	 # decrements_by_1
-   ;
 
-string_operation :
-	(STRING|variable) (ADD (value|variable))+ # concatinate_string
+	//Operations are listed in order of precedence
+	
+    operand POW<assoc=right> operand 	# toPower //<assoc=right> defines that the power operator is right associative.
+    | operand MUL operand 				# multiply
+    | operand DIV operand 				# divide
+    | operand MOD operand 				# modulo
+    | operand ADD operand 				# add
+    | operand SUB operand 				# subtract
+    ;
+number_functions:
+	INC variable
+	|DEC variable
+	;
+
+text_operation :
+	(TEXT|variable) (ADD (value|variable))+ # concatinate_text
 	;
 
 bool_operation :
@@ -112,6 +130,7 @@ bool_operator:
 	|BOOLEQUALS
 	|EXCLAIM REQUALS
 	;
+	
 
 loop :
 	forloop
@@ -120,28 +139,37 @@ loop :
 	;
 	
 forloop :
-	block (LPARENS (number_operation ASSIGNMENTOPERATOR variable) SEMICOLON bool_operation SEMICOLON declaration RPARENS) FOR
+	block 
+	(LPARENS ((number_operation ASSIGNMENTOPERATOR variable)|number_functions)
+		SEMICOLON bool_operation 
+		SEMICOLON declaration 
+		RPARENS
+	) 
+	'for'
 	;
 whileloop:
-	block (LPARENS bool_operation WHILE RPARENS)
+	block (LPARENS bool_stmt RPARENS) WHILE
 	;
 dountil:
-	RARROW bool_operation 'until' stmt* LARROW 'execute'
+	RARROW bool_stmt 'until' stmt* LARROW 'execute'
 	;
 
 operand :
-	value | variable
+	value
+	|variable
+	|NULL
    ;
 
 value :
 	NUMBER
-   | STRING
+   | TEXT
    | BOOL
+   | NULL
    ;
 
 var_type:
 	FLOATTYPE
-	|STRINGTYPE
+	|TEXTTYPE
 	|BOOLTYPE
 	;
 		
@@ -165,24 +193,25 @@ assignment :
 
 
 ASSIGNMENTOPERATOR: REQUALS ;
-VALUE : [STRING NUMBER] ;
-STRING : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
+TEXT : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
 NUMBER : [FLOAT SHORTFLOAT];
 BOOL: TRUE|FALSE;
 TRUE: 'true';
 FALSE: 'false';
-//Any standard ASCII char (that's readable, inc. space)
+
+//Comments are thrown out on the lexer channel
+LINE_COMMENT : '//' .*? '\r'? '\n' -> skip ; // Match "//" stuff '\n'
+COMMENT : '/*' .*? '*/' -> skip ; // Match "/*" stuff "*/"
+
+//Any standard ASCII char (that's readable, inc. space). [A-Z][a-Z] would not suffice
 CHARACTER: [\u0040-\u007E];
-ARRAY : LT [DIGIT]+ GT;
+
+ARRAY : LT [DIGIT]* GT;
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
 SHORTFLOAT : DOT DIGIT+ ;
 UNDERSCORE : '_' ;
 LETTER : LOWERCASE|UPPERCASE;
 LABEL: [LETTER]+;
-fragment
-	UPPERCASE: [A-Z] ;
-fragment
-	LOWERCASE : [a-z] ;
 DIGIT : [0-9] ;
 OR: 'or';
 AND: 'and';
@@ -192,7 +221,6 @@ REQUALS : '==>' ;
 LEQUALS : '<==';
 BOOLEQUALS : '<==>';
 DOUBLEQUOTE : '"' ;
-SINGLEQUOTE : '\'' ;
 MINUS : '-' ;
 DOT : '.' ;
 SEMICOLON: ';';
@@ -219,12 +247,16 @@ PRINTLN : 'nloutput';
 PRINT : 'output';
 RETURN: 'return';
 INPUT : 'userinput';
-STRINGTYPE : 'text';
+TEXTTYPE : 'text';
 FLOATTYPE : 'decimal';
 BOOLTYPE : 'logical';
 VOIDTYPE: 'void';
-ARRAYTYPE: LSQBRKT RSQBRKT;
-FOR: 'for';
+NULL: 'null';
 WHILE: 'as long as';
+
+fragment
+	UPPERCASE: [A-Z] ;
+fragment
+	LOWERCASE : [a-z] ;
 
 

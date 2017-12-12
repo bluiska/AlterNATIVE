@@ -2,8 +2,12 @@
 
 This program is a simple guessing game (truly simple as the number isn't even random!). The user is prompted for a number and once the number is input, a case (check) statement checks the result and displays a message accordingly. The program terminates when the number is guessed.
 
-```
-END
+
+
+```javascript
+//Javascript highlighting so it's a bit nicer!
+
+FINISH
 
 -> (numIn !==> result) until
 
@@ -41,7 +45,7 @@ END
 10 ==> number1 decimal constant
 20 ==> number2 decimal constant
 
-BEGIN
+START
 
 0==>result decimal
 ```
