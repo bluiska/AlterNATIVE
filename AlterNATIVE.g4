@@ -3,8 +3,9 @@
 //Global variables - DONE
 //Func call - DONE
 //Variable scoping to function - DONE
-//Comments
-//Using brackets to define precedence - 
+//Comments - DONE
+//Using brackets to define precedence - DONE
+
 
 /*
  *     ___     __   __                   _   __    ___   ______    ____ _    __    ______
@@ -47,15 +48,12 @@ return_block:
 funcall:
 	void_funcall|nonvoid_funcall
 	;
-
 void_funcall :
 	LPARENS variable* RPARENS LABEL 'call'
 	;
 nonvoid_funcall :
-	variable? ASSIGNMENTOPERATOR LPARENS variable* RPARENS LABEL 'call'
+	(variable ASSIGNMENTOPERATOR)? LPARENS variable* RPARENS LABEL 'call'
 	;
-
-
 print_stmt :
 	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT) 
 	;
@@ -74,7 +72,7 @@ case_condition:
 	;
 
 if_stmt :
-	block LPARENS bool_stmt RPARENS 'if'
+	(block 'otherwise')? (block 'or when')* block LPARENS bool_stmt RPARENS 'when'
 	;
 
 	
@@ -101,17 +99,18 @@ array_operations:
 number_operation :
 
 	//Operations are listed in order of precedence
-	
-    operand POW<assoc=right> operand 	# toPower //<assoc=right> defines that the power operator is right associative.
+	  LPARENS number_operation RPARENS	# brackets_precedence
+    | operand POW<assoc=right> operand 	# toPower //<assoc=right> defines that the power operator is right associative.
     | operand MUL operand 				# multiply
     | operand DIV operand 				# divide
     | operand MOD operand 				# modulo
     | operand ADD operand 				# add
     | operand SUB operand 				# subtract
     ;
+
+    
 number_functions:
-	INC variable
-	|DEC variable
+	(INC|DEC) variable #increment_or_decrement
 	;
 
 text_operation :
@@ -156,7 +155,7 @@ dountil:
 
 operand :
 	value
-	|variable
+	|variable ARRAY?
 	|NULL
    ;
 
@@ -164,9 +163,8 @@ value :
 	NUMBER
    | TEXT
    | BOOL
-   | NULL
    ;
-
+	
 var_type:
 	FLOATTYPE
 	|TEXTTYPE
@@ -192,7 +190,7 @@ assignment :
    ;
 
 
-ASSIGNMENTOPERATOR: REQUALS ;
+ASSIGNMENTOPERATOR: REQUALS;
 TEXT : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
 NUMBER : [FLOAT SHORTFLOAT];
 BOOL: TRUE|FALSE;
@@ -200,11 +198,11 @@ TRUE: 'true';
 FALSE: 'false';
 
 //Comments are thrown out on the lexer channel
-LINE_COMMENT : '//' .*? '\r'? '\n' -> skip ; // Match "//" stuff '\n'
-COMMENT : '/*' .*? '*/' -> skip ; // Match "/*" stuff "*/"
+LINE_COMMENT : '//' .*? '\n' -> skip ;
+COMMENT : '/*' .*? '*/' -> skip ;
 
-//Any standard ASCII char (that's readable, inc. space). [A-Z][a-Z] would not suffice
-CHARACTER: [\u0040-\u007E];
+//Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
+CHARACTER: '"' ( '\\"' | . )*? '"' ; 
 
 ARRAY : LT [DIGIT]* GT;
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
