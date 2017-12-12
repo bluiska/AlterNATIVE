@@ -6,6 +6,7 @@
 //Comments - DONE
 //Using brackets to define precedence - DONE
 
+```javascript
 
 /*
  *     ___     __   __                   _   __    ___   ______    ____ _    __    ______
@@ -25,7 +26,7 @@ program:
 function_def:
 	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type ARRAY?|VOIDTYPE)
 	;
-	
+
 stmt :
 	print_stmt
 	| funcall
@@ -36,7 +37,7 @@ stmt :
 	| assignment
 	| declaration
 	| number_functions
-	| array_operations	
+	| array_operations
 	;
 
 block :
@@ -55,7 +56,7 @@ nonvoid_funcall :
 	(variable ASSIGNMENTOPERATOR)? LPARENS variable* RPARENS LABEL 'call'
 	;
 print_stmt :
-	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT) 
+	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT)
 	;
 input_stmt:
 	LPARENS variable RPARENS INPUT
@@ -75,7 +76,7 @@ if_stmt :
 	(block 'otherwise')? (block 'or when')* block LPARENS bool_stmt RPARENS 'when'
 	;
 
-	
+
 bool_stmt:
 	(bool_operation logic_connector)* bool_operation
 	|(nonvoid_funcall logic_connector)* nonvoid_funcall
@@ -85,7 +86,7 @@ logic_connector:
 	OR
 	|AND
 	;
-	
+
 operations:
 	number_operation
 	|text_operation
@@ -108,7 +109,7 @@ number_operation :
     | operand SUB operand 				# subtract
     ;
 
-    
+
 number_functions:
 	(INC|DEC) variable #increment_or_decrement
 	;
@@ -129,21 +130,21 @@ bool_operator:
 	|BOOLEQUALS
 	|EXCLAIM REQUALS
 	;
-	
+
 
 loop :
 	forloop
 	|whileloop
 	|dountil
 	;
-	
+
 forloop :
-	block 
+	block
 	(LPARENS ((number_operation ASSIGNMENTOPERATOR variable)|number_functions)
-		SEMICOLON bool_operation 
-		SEMICOLON declaration 
+		SEMICOLON bool_operation
+		SEMICOLON declaration
 		RPARENS
-	) 
+	)
 	'for'
 	;
 whileloop:
@@ -164,13 +165,13 @@ value :
    | TEXT
    | BOOL
    ;
-	
+
 var_type:
 	FLOATTYPE
 	|TEXTTYPE
 	|BOOLTYPE
 	;
-		
+
 variable :
 	UNDERSCORE? LETTER (LETTER | DIGIT | UNDERSCORE)*
    ;
@@ -181,7 +182,7 @@ declaration :
 	|operations ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
 	|nonvoid_funcall ASSIGNMENTOPERATOR variable var_type ARRAY? CONST?
    ;
-   
+
 //Assign value to already existing variable
 assignment :
 	operand ASSIGNMENTOPERATOR variable
@@ -202,7 +203,7 @@ LINE_COMMENT : '//' .*? '\n' -> skip ;
 COMMENT : '/*' .*? '*/' -> skip ;
 
 //Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
-CHARACTER: '"' ( '\\"' | . )*? '"' ; 
+CHARACTER: '"' ( '\\"' | . )*? '"' ;
 
 ARRAY : LT [DIGIT]* GT;
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
@@ -257,4 +258,4 @@ fragment
 fragment
 	LOWERCASE : [a-z] ;
 
-
+```
