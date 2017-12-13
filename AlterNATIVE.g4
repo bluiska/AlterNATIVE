@@ -35,7 +35,6 @@ stmt :
 	| input_stmt
 	| assignment
 	| declaration
-
 	;
 
 print_stmt :
@@ -82,36 +81,32 @@ operations:
 	;
 	
 array_functions:
-	  LPARENS variable EQUALS variable RPARENS 'merge'				#merge
-	| LPARENS variable EQUALS variable RPARENS 'join'				#join
-	| LPARENS variable RPARENS 'quantity'							#length
-	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	#slice_array
+	  LPARENS variable EQUALS variable RPARENS 'merge'				//merge
+	| LPARENS variable EQUALS variable RPARENS 'join'				//join
+	| LPARENS variable RPARENS 'quantity'							//length
+	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice_array
 	;
 
 number_operation :
-	  LPARENS number_operation RPARENS	# brackets_precedence
-    | operand POW<assoc=right> operand 	# toPower
-    | operand MUL operand 				# multiply
-    | operand DIV operand 				# divide
-    | operand MOD operand 				# modulo
-    | operand ADD operand 				# add
-    | operand SUB operand 				# subtract
+	  LPARENS number_operation RPARENS	// brackets_precedence
+    | operand POW<assoc=right> operand 	// toPower
+    | operand MUL operand 				// multiply
+    | operand DIV operand 				// divide
+    | operand MOD operand 				// modulo
+    | operand ADD operand 				// add
+    | operand SUB operand 				// subtract
     ;
 
 number_functions:
-	(INC|DEC) variable #increment_or_decrement
+	(INC|DEC) variable //increment or decrement
 	;
 
 text_operation :
-	(TEXT|variable) (ADD (value|variable))+ #concatinate_text
-	| LPARENS variable RPARENS 'quantity'
-	| LPARENS (TEXT|variable) RPARENS 'exists'
+	(TEXT|variable) (ADD (value|variable))+ 	//concatinate text
+	| LPARENS variable RPARENS 'quantity'   	//get length
+	| LPARENS (TEXT|variable) RPARENS 'exists'	//contains
+	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice string
 	;
-	
-text_function:
-	variable 'from' LPARENS value COMMA value RPARENS 'extract'	#slice_string
-	;
-	
 
 bool_operation :
 	operand bool_operator operand
