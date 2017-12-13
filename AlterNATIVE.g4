@@ -180,7 +180,7 @@ declaration :
 	(operand EQUALS variable var_type
 	|operations EQUALS variable var_type
 	|funcall EQUALS variable var_type 
-	|(funcall|LT GT|LT value (',' value)* GT) EQUALS variable var_type ARRAY)
+	|(funcall|LT GT|LT value (',' value)* GT) EQUALS variable var_type array)
 	CONST?
    ;
 
@@ -189,7 +189,7 @@ assignment :
 	 (operand EQUALS variable
 	|operations EQUALS variable
 	|funcall EQUALS variable )
-	ARRAY?
+	array?
    ;
 
 //LEXER RULES------------------------------------------------------------------------
