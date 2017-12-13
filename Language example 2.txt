@@ -8,9 +8,33 @@
 FINISH
 
 
-
+0 ==> index decimal
 START
+
+
+
 
 ->
 
-<-()
+  ->
+
+    ->
+    price++(price**vat) ==> costArray<<index>>
+  	<-(price <<==> 100 and price >> 0)when
+  	(price)userinput
+  	("Enter the price (0-100): ")output
+
+  <-(false !==> true)as long as
+  false ==> isValid logical
+
+<-()getInput void
+//Methods
+
+
+
+0 ==> index decimal
+0 ==> price decimal
+0.2 ==> vat decimal constant
+<<>> ==> costArray decimal<<10>>
+
+//Global variables
