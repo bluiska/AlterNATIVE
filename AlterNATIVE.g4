@@ -25,7 +25,7 @@ program:
 	;
 
 function_def:
-	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type ARRAY?|VOIDTYPE)
+	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type array?|VOIDTYPE)
 	;
 
 stmt :
@@ -85,20 +85,14 @@ logic_connector:
 operations:
 	number_operation
 	|text_operation
-	|bool_operation
-	|array_operation
-	
+	|bool_operation	
 	;
 array_functions:
-	variable LEQUALS variable 'merge'	#merge
-	| variable LEQUALS variable 'join'	#join
-	;
-array_operation:
-	variable ARRAY 				#item_at_index
+	variable EQUALS variable 'merge'	#merge
+	| variable EQUALS variable 'join'	#join
 	;
 
 number_operation :
-
 	//Operations are listed in order of precedence
 	  LPARENS number_operation RPARENS	# brackets_precedence
     | operand POW<assoc=right> operand 	# toPower //<assoc=right> defines that the power operator is right associative.
@@ -125,10 +119,10 @@ bool_operation :
 bool_operator:
 	LT
 	|GT
-	|LT REQUALS
-	|GT REQUALS
+	|LT EQUALS
+	|GT EQUALS
 	|BOOLEQUALS
-	|EXCLAIM REQUALS
+	|EXCLAIM EQUALS
 	;
 
 
@@ -140,7 +134,7 @@ loop :
 
 forloop :
 	block
-	(LPARENS ((number_operation ASSIGNMENTOPERATOR variable)|number_functions)
+	(LPARENS ((number_operation EQUALS variable)|number_functions)
 		SEMICOLON bool_operation
 		SEMICOLON declaration
 		RPARENS
@@ -157,7 +151,7 @@ dountil:
 
 operand :
 	value
-	|variable ARRAY?
+	|variable array?
 	|NULL
    ;
 
@@ -173,34 +167,36 @@ var_type:
 	|BOOLTYPE
 	;
 
+array:
+	LT (DIGIT+|variable|funcall|number_operation) GT
+	;
+
 variable :
 	UNDERSCORE? LETTER (LETTER | DIGIT | UNDERSCORE)*
    ;
 
 //Declare new variables. Constant and array is optional, variable type necessary.
 declaration :
-	(operand ASSIGNMENTOPERATOR variable var_type
-	|operations ASSIGNMENTOPERATOR variable var_type
-	|funcall ASSIGNMENTOPERATOR variable var_type 
-	|(funcall|LT GT|LT value (',' value)* GT) ASSIGNMENTOPERATOR variable var_type ARRAY)
+	(operand EQUALS variable var_type
+	|operations EQUALS variable var_type
+	|funcall EQUALS variable var_type 
+	|(funcall|LT GT|LT value (',' value)* GT) EQUALS variable var_type ARRAY)
 	CONST?
    ;
 
 //Assign value to already existing variable
 assignment :
-	 (operand ASSIGNMENTOPERATOR variable
-	|operations ASSIGNMENTOPERATOR variable
-	|funcall ASSIGNMENTOPERATOR variable )
+	 (operand EQUALS variable
+	|operations EQUALS variable
+	|funcall EQUALS variable )
 	ARRAY?
    ;
 
+//LEXER RULES------------------------------------------------------------------------
 
-ASSIGNMENTOPERATOR: REQUALS;
 TEXT : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
 NUMBER : [FLOAT SHORTFLOAT];
-BOOL: TRUE|FALSE;
-TRUE: 'true';
-FALSE: 'false';
+BOOL: 'true'|'false';
 
 //Comments are thrown out on the lexer channel
 LINE_COMMENT : '//' .*? '\n' -> skip ;
@@ -209,7 +205,7 @@ COMMENT : '/*' .*? '*/' -> skip ;
 //Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
 CHARACTER: '"' ( '\\"' | . )*? '"' ;
 
-ARRAY : LT [DIGIT]+ GT;
+
 FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
 SHORTFLOAT : DOT DIGIT+ ;
 UNDERSCORE : '_' ;
@@ -220,8 +216,7 @@ OR: 'or';
 AND: 'and';
 CONST: 'constant';
 WHITESPACE : [' '\t\r\n] -> skip ;
-REQUALS : '==>' ;
-LEQUALS : '<==';
+EQUALS : '==>' ;
 BOOLEQUALS : '<==>';
 DOUBLEQUOTE : '"' ;
 MINUS : '-' ;
@@ -242,8 +237,8 @@ DIV : '//' ;
 ADD : '++' ;
 SUB : '--' ;
 MOD : '%%' ;
-INC : ADD REQUALS;
-DEC : SUB REQUALS;
+INC : ADD EQUALS;
+DEC : SUB EQUALS;
 COLON : ':' ;
 COMMA : ',';
 PRINTLN : 'nloutput';
