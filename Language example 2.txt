@@ -7,33 +7,38 @@
 
 FINISH
 
-(index)getInput call
-0 ==> index decimal
+(end, start)getInput call
+()userinput ==> end decimal
+()userinput ==> start decimal
+("Enter the amount of prices you would like to input: ")nloutput
 START
-
+//Main method
 
 
 
 ->
+  return price++price**vat ==> price
+<-(price decimal)applyVAT decimal
 
+->
   ->
-
     ->
-    ++==>index
-    price++(price**vat) ==> costArray<<index>>
+      ->
+        ++==>start
+        (price)applyVAT call ==> costArray<<start>>
+    	<-(price <<==> 100 and price >> 0)when
 
-  	<-(price <<==> 100 and price >> 0)when
-  	(price)userinput
-  	("Enter the price (0-100): ")output
-
-  <-(false !==> true)as long as
-  false ==> isValid logical
-
-<-(index decimal)getInput void
+    	(price)userinput
+    	("Enter the price (0-100): ")output
+    <-(false !==> true)as long as
+    false ==> isValid logical
+  <-(start <<==> end)
+  i ==> start decimal
+  j ==> end decimal
+<-(j decimal, i decimal)getInput void
 //Methods
 
 0 ==> price decimal
 0.2 ==> vat decimal constant
 <<>> ==> costArray decimal<<10>>
-
 //Global variables

@@ -1,10 +1,3 @@
-//Arrays - DONE
-//Array operations
-//Global variables - DONE
-//Func call - DONE
-//Variable scoping to function - DONE
-//Comments - DONE
-//Using brackets to define precedence - DONE
 
 ```javascript
 
@@ -15,7 +8,7 @@
  / ___ | / /  / /_  /  __/ / /     / /|  /   / ___ | / /     _/ /   | |/ /   / /___   
 /_/  |_|/_/   \__/  \___/ /_/     /_/ |_/   /_/  |_|/_/     /___/   |___/   /_____/   
  *
- *///                                                     created by   Gergo Kekesi
+ */// A language that's "flippin" weird...                created by   Gergo Kekesi
  //                                                                 ******************                                           
 
 grammar AlterNATIVE ;
@@ -27,9 +20,14 @@ program:
 function_def:
 	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type array?|VOIDTYPE)
 	;
+funcall:
+	LPARENS variable* RPARENS LABEL 'call'
+	| number_functions
+	| array_functions
+	;
 
 stmt :
-	print_stmt
+	  print_stmt
 	| funcall
 	| if_stmt
 	| case_stmt
@@ -37,27 +35,23 @@ stmt :
 	| input_stmt
 	| assignment
 	| declaration
-	| number_functions
-	| array_functions
+
 	;
 
-block :
-	RARROW stmt* LARROW
-	;
-return_block:
-	RARROW RETURN operand stmt* LARROW
-	;
-funcall:
-	LPARENS variable* RPARENS LABEL 'call'
-	;
 print_stmt :
 	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT)
 	;
 input_stmt:
-	LPARENS variable RPARENS INPUT
+	LPARENS variable? RPARENS INPUT
 	;
 case_stmt:
 	RARROW case_block+ LARROW LPARENS operand RPARENS 'check'
+	;
+block :
+	RARROW stmt* LARROW
+	;
+return_block:
+	RARROW RETURN (operand|assignment) stmt* LARROW
 	;
 case_block:
 	'terminate' EXCLAIM stmt* COLON case_condition
@@ -71,12 +65,11 @@ if_stmt :
 	(block 'otherwise')? (block 'or when')* block LPARENS bool_stmt RPARENS 'when'
 	;
 
-
 bool_stmt:
 	 LPARENS bool_stmt RPARENS
 	|((bool_operation|funcall) logic_connector)* (bool_operation|funcall)
 	;
-
+	
 logic_connector:
 	AND
 	|OR
@@ -87,15 +80,17 @@ operations:
 	|text_operation
 	|bool_operation	
 	;
+	
 array_functions:
-	variable EQUALS variable 'merge'	#merge
-	| variable EQUALS variable 'join'	#join
+	  LPARENS variable EQUALS variable RPARENS 'merge'				#merge
+	| LPARENS variable EQUALS variable RPARENS 'join'				#join
+	| LPARENS variable RPARENS 'quantity'							#length
+	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	#slice_array
 	;
 
 number_operation :
-	//Operations are listed in order of precedence
 	  LPARENS number_operation RPARENS	# brackets_precedence
-    | operand POW<assoc=right> operand 	# toPower //<assoc=right> defines that the power operator is right associative.
+    | operand POW<assoc=right> operand 	# toPower
     | operand MUL operand 				# multiply
     | operand DIV operand 				# divide
     | operand MOD operand 				# modulo
@@ -103,14 +98,20 @@ number_operation :
     | operand SUB operand 				# subtract
     ;
 
-
 number_functions:
 	(INC|DEC) variable #increment_or_decrement
 	;
 
 text_operation :
-	(TEXT|variable) (ADD (value|variable))+ # concatinate_text
+	(TEXT|variable) (ADD (value|variable))+ #concatinate_text
+	| LPARENS variable RPARENS 'quantity'
+	| LPARENS (TEXT|variable) RPARENS 'exists'
 	;
+	
+text_function:
+	variable 'from' LPARENS value COMMA value RPARENS 'extract'	#slice_string
+	;
+	
 
 bool_operation :
 	operand bool_operator operand
@@ -124,7 +125,6 @@ bool_operator:
 	|BOOLEQUALS
 	|EXCLAIM EQUALS
 	;
-
 
 loop :
 	forloop
@@ -145,16 +145,17 @@ forloop :
 whileloop:
 	block (LPARENS bool_stmt RPARENS) WHILE
 	;
+	
 dountil:
 	RARROW bool_stmt 'until' stmt* LARROW 'execute'
 	;
-
+	
 operand :
 	value
 	|variable array?
 	|NULL
    ;
-
+   
 value :
 	NUMBER
    | TEXT
@@ -175,16 +176,12 @@ variable :
 	UNDERSCORE? LETTER (LETTER | DIGIT | UNDERSCORE)*
    ;
 
-//Declare new variables. Constant and array is optional, variable type necessary.
 declaration :
-	(operand EQUALS variable var_type
-	|operations EQUALS variable var_type
-	|funcall EQUALS variable var_type 
-	|(funcall|LT GT|LT value (',' value)* GT) EQUALS variable var_type array)
-	CONST?
+	((operand|operations|funcall|input_stmt) EQUALS variable var_type
+	|(funcall|LT GT|LT (value ',')* value GT) EQUALS variable var_type array)
+	(NULLABLE|CONST)?
    ;
 
-//Assign value to already existing variable
 assignment :
 	 (operand EQUALS variable
 	|operations EQUALS variable
@@ -194,28 +191,38 @@ assignment :
 
 //LEXER RULES------------------------------------------------------------------------
 
-TEXT : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
-NUMBER : [FLOAT SHORTFLOAT];
+//Tokens are in order of matching precedence
+
 BOOL: 'true'|'false';
-
-//Comments are thrown out on the lexer channel
-LINE_COMMENT : '//' .*? '\n' -> skip ;
-COMMENT : '/*' .*? '*/' -> skip ;
-
-//Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
-CHARACTER: '"' ( '\\"' | . )*? '"' ;
-
-
-FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
-SHORTFLOAT : DOT DIGIT+ ;
-UNDERSCORE : '_' ;
-LETTER : LOWERCASE|UPPERCASE;
-LABEL: [LETTER]+;
-DIGIT : [0-9] ;
+PRINTLN : 'nloutput';
+PRINT : 'output';
+RETURN: 'return';
+INPUT : 'userinput';
+TEXTTYPE : 'text';
+FLOATTYPE : 'decimal';
+BOOLTYPE : 'logical';
+VOIDTYPE: 'void';
+NULL: 'null';
+WHILE: 'as long as';
+NULLABLE: 'nullable';
 OR: 'or';
 AND: 'and';
 CONST: 'constant';
+LABEL: [LETTER]+;
+TEXT : DOUBLEQUOTE [CHARACTER]+ DOUBLEQUOTE ;
+NUMBER : [FLOAT SHORTFLOAT];
+SHORTFLOAT : DOT DIGIT+ ;
+FLOAT : MINUS? DIGIT DIGIT* DOT DIGIT* ;
+LETTER : LOWERCASE|UPPERCASE;
+INC : ADD EQUALS;
+DEC : SUB EQUALS;
+
+//Comments are thrown out on the lexer channel and not parsed
+LINE_COMMENT : '//' .*? '\n' -> skip ;
+ML_COMMENT : '/*' .*? '*/' -> skip;
 WHITESPACE : [' '\t\r\n] -> skip ;
+
+UNDERSCORE : '_' ;
 EQUALS : '==>' ;
 BOOLEQUALS : '<==>';
 DOUBLEQUOTE : '"' ;
@@ -224,8 +231,6 @@ DOT : '.' ;
 SEMICOLON: ';';
 LPARENS : '(' ;
 RPARENS : ')' ;
-LSQBRKT : '[' ;
-RSQBRKT : ']' ;
 LARROW : '<-';
 RARROW : '->';
 LT : '<<' ;
@@ -237,24 +242,20 @@ DIV : '//' ;
 ADD : '++' ;
 SUB : '--' ;
 MOD : '%%' ;
-INC : ADD EQUALS;
-DEC : SUB EQUALS;
+
 COLON : ':' ;
 COMMA : ',';
-PRINTLN : 'nloutput';
-PRINT : 'output';
-RETURN: 'return';
-INPUT : 'userinput';
-TEXTTYPE : 'text';
-FLOATTYPE : 'decimal';
-BOOLTYPE : 'logical';
-VOIDTYPE: 'void';
-NULL: 'null';
-WHILE: 'as long as';
+
+
+DIGIT : [0-9] ;
+//Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
+CHARACTER: '"' ( '\\"' | . )*? '"' ;
+
+
 
 fragment
 	UPPERCASE: [A-Z] ;
 fragment
 	LOWERCASE : [a-z] ;
 
-```
+
