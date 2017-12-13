@@ -74,8 +74,7 @@ if_stmt :
 
 bool_stmt:
 	 LPARENS bool_stmt RPARENS
-	|(bool_operation logic_connector)* (bool_operation|funcall)
-	|(funcall logic_connector)* 
+	|((bool_operation|funcall) logic_connector)* (bool_operation|funcall)
 	;
 
 logic_connector:
