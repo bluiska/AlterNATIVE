@@ -1,16 +1,19 @@
+# Below is the grammar for AlterNative
 
 ```javascript
 
 /*
- *  ___     __   __                   _   __    ___   ______    ____ _    __    ______
+     ___     __   __                   _   __    ___   ______    ____ _    __    ______
    /   |   / /  / /_  ___    _____   / | / /   /   | /_  __/   /  _/| |  / /   / ____/
   / /| |  / /  / __/ / _ \  / ___/  /  |/ /   / /| |  / /      / /  | | / /   / __/   
  / ___ | / /  / /_  /  __/ / /     / /|  /   / ___ | / /     _/ /   | |/ /   / /___   
 /_/  |_|/_/   \__/  \___/ /_/     /_/ |_/   /_/  |_|/_/     /___/   |___/   /_____/   
- *
- */// A language that's "flippin" weird...                created by   Gergo Kekesi
- //                                                                 ******************                                           
 
+     A language that's "flippin" weird...                created by   Gergo Kekesi
+                                                                   ******************                                           
+*/
+```
+```javascript
 grammar AlterNATIVE ;
 
 program:
@@ -69,7 +72,7 @@ boolStmt:
 	 LPARENS boolStmt RPARENS
 	|((boolOperations|funCall) logicConnector)* (boolOperations|funCall)
 	;
-	
+
 logicConnector:
 	AND
 	|OR
@@ -78,15 +81,15 @@ logicConnector:
 operations:
 	numberOperations
 	|textOperations
-	|boolOperations	
+	|boolOperations
 	;
-	
+
 arrayFunctions:
 	  LPARENS (variable|funCall) EQUALS (variable|funCall) RPARENS 'merge'				//merge
 	| LPARENS (variable|funCall) EQUALS (variable|funCall) RPARENS 'join'				//join
-	| LPARENS (variable|funCall) RPARENS 'quantity'							//length
-	| (variable|funCall) 'from' LPARENS value COMMA value RPARENS 'extract'	//slice_array
-	| (operand|funCall)'find'										//indexOf value
+	| LPARENS (variable|funCall) RPARENS 'quantity'										//length
+	| (variable|funCall) 'from' LPARENS value COMMA value RPARENS 'extract'				//slice_array
+	| (operand|funCall)'find'															//indexOf value
 	;
 
 numberOperations :
@@ -105,9 +108,9 @@ numberFunctions:
 	;
 
 textOperations :
-	(TEXT|variable) (ADD (value|variable))+ 	//concatinate text
-	| LPARENS variable RPARENS 'quantity'   	//get length
-	| LPARENS (TEXT|variable) RPARENS 'exists'	//contains
+	(TEXT|variable) (ADD (value|variable))+ 						//concatinate text
+	| LPARENS variable RPARENS 'quantity'   						//get length
+	| LPARENS (TEXT|variable) RPARENS 'exists'						//contains
 	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice string
 	;
 
@@ -139,22 +142,22 @@ forloop :
 	)
 	'for'
 	;
-	
+
 whileloop:
 	block (LPARENS boolStmt RPARENS) WHILE
 	;
-	
+
 dountil:
 	RARROW boolStmt 'until' stmt* LARROW 'execute'
 	;
-	
+
 operand :
 	value
 	|variable array?
 	|NULL
 	|textOperations
    ;
-   
+
 value :
 	NUMBER
    | TEXT
@@ -258,4 +261,4 @@ fragment
 fragment
 	MINUS : '-' ;
 
-
+```

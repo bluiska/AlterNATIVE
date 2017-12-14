@@ -142,7 +142,7 @@ FINISH
 racers from (2,0) extract ==> firstThree text<<3>>
 ("Greg finished the race at " ++ ("Greg")find ++ " place")nloutput
 START
-
+//Main program
 
 ->
   return newRacers
@@ -156,13 +156,59 @@ START
     <-(originalRacers<<index>> !==> person)when
   <-(index < (originalRacers)quantity)as long as
   0 ==> index decimal
-  <<>> ==> newRacers text<<(originalRacers)quantity - 1>>
+  <<>> ==> newRacers text<<(originalRacers)quantity - 1>> nullable
 <-(person text,originalRacers text<<>>)disqualify text<<>>
+//Methods
 
 <<"Greg","Chris","Jack","Sarah","Luke","Natalie">> ==> racers text<<6>> constant
+//Global Variable
+
+```
+
+# Sample Program 4
+### String manipulation and boolean arrays
+
+```javascript
 
 
+FINISH
+(aBoolArray<<2>>)nloutput
+(theString)evaluateString call ==> aBoolArray
+null ==> theString
+->
+  ("No")output
+<- otherwise
+->
+  ("Yes")output
+<-(aBoolArray<<0>> ==> true)when
+("Is the first character in the variable 'theString' occupied by a non-space char?: ")nloutput
+((theString)evaluateString call ==> aBoolArray)merge ==> aBoolArray
+<<>> ==> aBoolArray logical<<5>> nullable
+START
 
+->
+  return boolArray
+  ->
+    ->
+      ->
+        true ==> boolArray<<i>>
+      <- otherwise
+      ->
+        false ==> boolArray<<i>>
+      <-(theString<<i>> <==> ' ')when
+    <-(++==>i; i << (theString)quantity;0 ==> i decimal) for
+
+    <<>> ==> boolArray logical<<(theString)quantity>> nullable
+
+  <- otherwise
+  ->
+  return null
+    ("The string is empty")nloutput
+  <-(theString ==> null)when
+<-(stringToWorkOn text)evaluateString logical<<>>
+
+
+"A A A" ==> theString text nullable
 
 
 ```

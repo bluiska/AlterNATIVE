@@ -75,3 +75,13 @@ Features seen here:
 * Create array functions that return arrays
 * Extract values into a new array
 * Assign returned array to a new array in one line
+
+##### Program 4
+The string manipulation program starts off with defining a global text variable containing three letters and two spaces. Then a function called *evaluateString* is defined which is a boolean array function (`logical<<>>`). It takes a string as a parameter and return a bool array where an index in the array will be true of that index in the string is anything but space. If it is space it will be false. In the main method of the program we first declare an enmpty logical array of size 5 and set it so that it can be NULL. We then call the merge function where we merge the returned array from *evaluateString* with the empty array which will simply just result in aBoolArray being equal to the the returned array as there is nothing in aBoolArray to merge. Then based on the findings of *evalueString* either "Yes" or "No" is printed. Then, theString variable is set to NULL and passed to *evaluateString* once more resulting in null being returned and aBoolArray being made null. When we try and access index 2 in the print statement, it prints null.
+Features seen here:
+* Nullable array and strings
+* Logical array function.
+* Accessing individual characters in a string
+* Merge function
+* Making an array be equal to an array
+* Null output as text
