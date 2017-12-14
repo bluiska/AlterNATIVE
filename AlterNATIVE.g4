@@ -38,7 +38,7 @@ stmt :
 	;
 
 printStmt :
-	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT)
+	LPARENS DOUBLEQUOTE? operand DOUBLEQUOTE? RPARENS (PRINTLN|PRINT)
 	;
 inputStmt:
 	LPARENS variable? RPARENS INPUT
@@ -56,12 +56,13 @@ caseBlock:
 	'terminate' EXCLAIM stmt* COLON caseCondition
 	;
 caseCondition:
-	('is' boolOperators operand)
-	|'by default'
+	COLON
+	(('is' boolOperators operand)
+	|'by default')
 	;
 
 ifStmt :
-	(block 'otherwise')? (block 'or when')* block LPARENS boolStmt RPARENS 'when'
+	(block 'otherwise')? (block LPARENS boolStmt RPARENS 'or when')* block LPARENS boolStmt RPARENS 'when'
 	;
 
 boolStmt:
@@ -150,6 +151,7 @@ operand :
 	value
 	|variable array?
 	|NULL
+	|textOperations
    ;
    
 value :
@@ -225,8 +227,6 @@ UNDERSCORE : '_' ;
 EQUALS : '==>' ;
 BOOLEQUALS : '<==>';
 DOUBLEQUOTE : '"' ;
-MINUS : '-' ;
-DOT : '.' ;
 SEMICOLON: ';';
 LPARENS : '(' ;
 RPARENS : ')' ;
@@ -241,20 +241,20 @@ DIV : '//' ;
 ADD : '++' ;
 SUB : '--' ;
 MOD : '%%' ;
-
 COLON : ':' ;
 COMMA : ',';
-
-
 DIGIT : [0-9] ;
+
 //Match any character inc. escaped quotation mark.  [A-Z][a-Z][0-9] would not suffice
 CHARACTER: '"' ( '\\"' | . )*? '"' ;
-
-
 
 fragment
 	UPPERCASE: [A-Z] ;
 fragment
 	LOWERCASE : [a-z] ;
+fragment
+	DOT : '.' ;
+fragment
+	MINUS : '-' ;
 
 
