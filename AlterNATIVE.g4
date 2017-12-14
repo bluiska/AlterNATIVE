@@ -86,6 +86,7 @@ arrayFunctions:
 	| LPARENS variable EQUALS variable RPARENS 'join'				//join
 	| LPARENS variable RPARENS 'quantity'							//length
 	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice_array
+	| (operand|funCall)'find'										//indexOf value
 	;
 
 numberOperations :
@@ -99,8 +100,8 @@ numberOperations :
     ;
 
 numberFunctions:
-	(INC|DEC) variable 					//increment or decrement
-	|(DIGIT+ COMMA variable)'precision'	//Set decimal places (round)
+	(INC|DEC) variable 								//increment or decrement
+	|(DIGIT+ COMMA (operand|funCall))'precision'	//Set decimal places (round)
 	;
 
 textOperations :
