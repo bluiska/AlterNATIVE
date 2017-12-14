@@ -82,10 +82,10 @@ operations:
 	;
 	
 arrayFunctions:
-	  LPARENS variable EQUALS variable RPARENS 'merge'				//merge
-	| LPARENS variable EQUALS variable RPARENS 'join'				//join
-	| LPARENS variable RPARENS 'quantity'							//length
-	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice_array
+	  LPARENS (variable|funCall) EQUALS (variable|funCall) RPARENS 'merge'				//merge
+	| LPARENS (variable|funCall) EQUALS (variable|funCall) RPARENS 'join'				//join
+	| LPARENS (variable|funCall) RPARENS 'quantity'							//length
+	| (variable|funCall) 'from' LPARENS value COMMA value RPARENS 'extract'	//slice_array
 	| (operand|funCall)'find'										//indexOf value
 	;
 
