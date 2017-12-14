@@ -22,7 +22,7 @@
   1. The lexer rules are listed in order of precedence so that for example '*when*' is matched first instead of *CHARACTER*. The same with boolean and number operations.
   2. The *power operator* is set to be right associative so that it reflects the way it is used in mathematics. `2^2^3 is 2^(2^3).`
   3. I decided that I will handle null pointer exceptions by default using the same technique as *KOTLIN*. When declaring a variable one can apply a modifier called *"nullable"* to it which defines that that variable can accept NULL values. Otherwise, no variables can be NULL so this way you'll spot the error before it occurs.
-  4. Comments are not parsed
+  4. Comments are not parsed. Can be single or multiline using `//` and `/**/` respectively
   5. Other:
    1. Boolean operations such as greater than or less than are read from left to right, just the same way as in other languages. ``(10 >> 2)`` evaluates to true. ``(4+(4*2) <<==> 11)`` evaluates to false.
    2. Array indexes however start from the right. ``<<"Index 3","Index 2", "Index 1", "Index 0">> ==> anArray text<<4>>``
@@ -36,6 +36,11 @@
       2. `quantity` -> returns the number of characters in the strings
       3. `exists` -> checkes whether a squence of characters exist in the string returning true or false based on the result
       4. `extract from` -> returns a string with the values in-between the supplied indexes
+    5. Selection options available: if(when, or when, otherwise) and case(check) statement
+    6. Loop options available: for, while(as long as), do-while (execute-until)
+    7. Data types: float(decimal), string(text), boolean(logical). All of these can be one dimensional arrays too.
+    8. Blocks are defined by arrows. -> statements <-
+
 
 ### 3. Sample program explanations
 
