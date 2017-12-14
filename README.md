@@ -64,5 +64,9 @@ In this example program there aren't many features that have not been demonstrat
 * default statement is used to display "Invalid" if none of the other checks work.
 
 ##### Program 3
-array return type
-arrayFunctions
+Program 3 showcases what can be done with arrays in **AlterNATIVE**. From an array of racers, first the place "Greg" finished at is printed. Then, using the `extract from` function, a new array of three racers is created and then printed index by index. After this, is user defined method called disqualify is called. This function removes the person passed it from the originalRacers and returns the new array.
+Features seen here:
+
+* Create array functions that return arrays
+* Extract values into a new array
+* Assign returned array to a new array in one line

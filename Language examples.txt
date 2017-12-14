@@ -125,17 +125,39 @@ START
 ```
 
 # Sample Program 3
-###
+### Array magic
 
 ```javascript
 
 FINISH
+
+->
+  (newRacers<<i>>)nloutput
+<-(++==>i; i << (newRacers)quantity;0 ==> i decimal) for
+
+("Natalie",originalRacers)disqualify call ==> newRacers text<<(originalRacers)quantity - 1>>
 ->
   (firstThree<<i>>)nloutput
 <-(++==>i; i << (firstThree)quantity;0 ==> i decimal) for
 racers from (2,0) extract ==> firstThree text<<3>>
 ("Greg finished the race at " ++ ("Greg")find ++ " place")nloutput
 START
+
+
+->
+  return newRacers
+  ->
+    ++==>index
+    ->
+      --==>index
+    <-otherwise
+    ->
+      oldRacers<<index>> ==> newRacers<<index>>
+    <-(originalRacers<<index>> !==> person)when
+  <-(index < (originalRacers)quantity)as long as
+  0 ==> index decimal
+  <<>> ==> newRacers text<<(originalRacers)quantity - 1>>
+<-(person text,originalRacers text<<>>)disqualify text<<>>
 
 <<"Greg","Chris","Jack","Sarah","Luke","Natalie">> ==> racers text<<6>> constant
 
