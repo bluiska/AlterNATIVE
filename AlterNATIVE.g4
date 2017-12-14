@@ -14,81 +14,81 @@
 grammar AlterNATIVE ;
 
 program:
-	 ('FINISH' stmt* 'START') (function_def|declaration)*
+	 ('FINISH' stmt* 'START') (functionDef|declaration)*
 	;
 
-function_def:
-	(block|return_block) LPARENS (variable var_type)? (COMMA variable var_type)* RPARENS LABEL (var_type array?|VOIDTYPE)
+functionDef:
+	(block|returnBlock) LPARENS (variable varType)? (COMMA variable varType)* RPARENS LABEL (varType array?|VOIDTYPE)
 	;
-funcall:
+funCall:
 	LPARENS variable* RPARENS LABEL 'call'
-	| number_functions
-	| array_functions
+	| numberFunctions
+	| arrayFunctions
 	;
 
 stmt :
-	  print_stmt
-	| funcall
-	| if_stmt
-	| case_stmt
+	  printStmt
+	| funCall
+	| ifStmt
+	| caseStmt
 	| loop
-	| input_stmt
+	| inputStmt
 	| assignment
 	| declaration
 	;
 
-print_stmt :
+printStmt :
 	LPARENS DOUBLEQUOTE operand DOUBLEQUOTE RPARENS (PRINTLN|PRINT)
 	;
-input_stmt:
+inputStmt:
 	LPARENS variable? RPARENS INPUT
 	;
-case_stmt:
-	RARROW case_block+ LARROW LPARENS operand RPARENS 'check'
+caseStmt:
+	RARROW caseBlock+ LARROW LPARENS operand RPARENS 'check'
 	;
 block :
 	RARROW stmt* LARROW
 	;
-return_block:
+returnBlock:
 	RARROW RETURN (operand|assignment) stmt* LARROW
 	;
-case_block:
-	'terminate' EXCLAIM stmt* COLON case_condition
+caseBlock:
+	'terminate' EXCLAIM stmt* COLON caseCondition
 	;
-case_condition:
-	('is' bool_operator operand)
+caseCondition:
+	('is' boolOperators operand)
 	|'by default'
 	;
 
-if_stmt :
-	(block 'otherwise')? (block 'or when')* block LPARENS bool_stmt RPARENS 'when'
+ifStmt :
+	(block 'otherwise')? (block 'or when')* block LPARENS boolStmt RPARENS 'when'
 	;
 
-bool_stmt:
-	 LPARENS bool_stmt RPARENS
-	|((bool_operation|funcall) logic_connector)* (bool_operation|funcall)
+boolStmt:
+	 LPARENS boolStmt RPARENS
+	|((boolOperations|funCall) logicConnector)* (boolOperations|funCall)
 	;
 	
-logic_connector:
+logicConnector:
 	AND
 	|OR
 	;
 
 operations:
-	number_operation
-	|text_operation
-	|bool_operation	
+	numberOperations
+	|textOperations
+	|boolOperations	
 	;
 	
-array_functions:
+arrayFunctions:
 	  LPARENS variable EQUALS variable RPARENS 'merge'				//merge
 	| LPARENS variable EQUALS variable RPARENS 'join'				//join
 	| LPARENS variable RPARENS 'quantity'							//length
 	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice_array
 	;
 
-number_operation :
-	  LPARENS number_operation RPARENS	// brackets_precedence
+numberOperations :
+	  LPARENS numberOperations RPARENS	// brackets_precedence
     | operand POW<assoc=right> operand 	// toPower
     | operand MUL operand 				// multiply
     | operand DIV operand 				// divide
@@ -97,22 +97,23 @@ number_operation :
     | operand SUB operand 				// subtract
     ;
 
-number_functions:
-	(INC|DEC) variable //increment or decrement
+numberFunctions:
+	(INC|DEC) variable 					//increment or decrement
+	|(DIGIT+ COMMA variable)'precision'	//Set decimal places (round)
 	;
 
-text_operation :
+textOperations :
 	(TEXT|variable) (ADD (value|variable))+ 	//concatinate text
 	| LPARENS variable RPARENS 'quantity'   	//get length
 	| LPARENS (TEXT|variable) RPARENS 'exists'	//contains
 	| variable 'from' LPARENS value COMMA value RPARENS 'extract'	//slice string
 	;
 
-bool_operation :
-	operand bool_operator operand
+boolOperations :
+	operand boolOperators operand
 	;
 
-bool_operator:
+boolOperators:
 	LT
 	|GT
 	|LT EQUALS
@@ -129,8 +130,8 @@ loop :
 
 forloop :
 	block
-	(LPARENS ((number_operation EQUALS variable)|number_functions)
-		SEMICOLON bool_operation
+	(LPARENS ((numberOperations EQUALS variable)|numberFunctions)
+		SEMICOLON boolOperations
 		SEMICOLON declaration
 		RPARENS
 	)
@@ -138,11 +139,11 @@ forloop :
 	;
 	
 whileloop:
-	block (LPARENS bool_stmt RPARENS) WHILE
+	block (LPARENS boolStmt RPARENS) WHILE
 	;
 	
 dountil:
-	RARROW bool_stmt 'until' stmt* LARROW 'execute'
+	RARROW boolStmt 'until' stmt* LARROW 'execute'
 	;
 	
 operand :
@@ -157,14 +158,16 @@ value :
    | BOOL
    ;
 
-var_type:
-	FLOATTYPE
+varType:
+	(FLOATTYPE
 	|TEXTTYPE
 	|BOOLTYPE
+	)
+	ARRAYTYPE?
 	;
 
 array:
-	LT (DIGIT+|variable|funcall|number_operation) GT
+	LT (DIGIT+|variable|funCall|numberOperations) GT
 	;
 
 variable :
@@ -172,15 +175,15 @@ variable :
    ;
 
 declaration :
-	((operand|operations|funcall|input_stmt) EQUALS variable var_type
-	|(funcall|LT GT|LT (value ',')* value GT) EQUALS variable var_type array)
+	((operand|operations|funCall|inputStmt) EQUALS variable varType
+	|(funCall|ARRAYTYPE|LT (value ',')* value GT) EQUALS variable varType array)
 	(NULLABLE|CONST)?
    ;
 
 assignment :
 	 (operand EQUALS variable
 	|operations EQUALS variable
-	|funcall EQUALS variable )
+	|funCall EQUALS variable )
 	array?
    ;
 
@@ -196,6 +199,7 @@ INPUT : 'userinput';
 TEXTTYPE : 'text';
 FLOATTYPE : 'decimal';
 BOOLTYPE : 'logical';
+ARRAYTYPE: LT GT;
 VOIDTYPE: 'void';
 NULL: 'null';
 WHILE: 'as long as';

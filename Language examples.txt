@@ -1,0 +1,136 @@
+```
+
+    ___     __   __                   _   __    ___   ______  ____ _    __    ______
+   /   |   / /  / /_  ___    _____   / | / /   /   | /_  __/ /  _/| |  / /   / ____/
+  / /| |  / /  / __/ / _ \  / ___/  /  |/ /   / /| |  / /    / /  | | / /   / __/   
+ / ___ | / /  / /_  /  __/ / /     / /|  /   / ___ | / /   _/ /   | |/ /   / /___   
+/_/  |_|/_/   \__/  \___/ /_/     /_/ |_/   /_/  |_|/_/   /___/   |___/   /_____/   
+
+      A language that's "flippin" weird...                created by   Gergo Kekesi
+                                                                  ******************  
+ ```
+# SAMPLE PROGRAM 1
+### Vat calculator with array
+
+```javascript
+
+FINISH
+
+(end, start)getInput call
+()userinput ==> end decimal
+("Enter how far to go in the array: ")nloutput
+()userinput ==> start decimal
+("Enter where to start in the array: ")nloutput
+(noOfItems)userinput
+("Enter the amount of prices you would like to input: ")nloutput
+0 ==> noOfItems decimal
+
+START
+//Main method
+
+->
+  return price++price**vat ==> price
+<-(price decimal)applyVAT decimal
+
+->
+  ->
+    ->
+      ->
+        ("Too low price, try again!")nloutput
+      <-(price << 0) or when
+      ->
+        ("Too high price, try again!")nloutput
+      <-(price >> 100) or when
+      ->
+        ("VAT applied, price added to array at index" ++ start)
+        true ==> isValid
+        ++==>start
+        (price)applyVAT call ==> costArray<<start>>
+    	<-(price <<==> 100 and price >> 0) when
+
+    	(price)userinput
+    	("Enter the price (0-100): ")output
+    <-(isValid !==> true)as long as
+    false ==> isValid logical
+  <-(start <<==> noOfItems and (costArray)quantity )
+  i ==> start decimal constant
+  j ==> end decimal constant
+  items ==> noOfItems decimal constant
+<-(items decimal,j decimal)getInput void
+//Methods
+
+0 ==> price decimal
+0.212 ==> vat decimal constant
+<<>> ==> costArray decimal<<10>>
+//Global variables
+```
+
+# Sample program 2
+
+### Not random number guesser
+
+```javascript
+//Javascript highlighting so it's a bit nicer!
+
+FINISH
+
+-> (numIn !==> result) until
+
+		->
+        ("Invalid")nloutput
+      :by default
+
+				terminate!
+				('Correct')nloutput
+			:is == result:
+
+				terminate!
+				('Try again!')nloutput
+				('Guess is too low')nloutput
+			:is << result
+
+				terminate!
+				('Try again!')nloutput
+				('Guess is too high')nloutput
+			:is >> result
+
+		<-(numIn) check
+
+		(numIn)userinput
+
+		('Guess a number')nloutput
+
+<- execute
+
+->
+
+  (number1**number2) ++ result ==> result
+
+<-(++==> i; i << 10; 0 ==> i decimal) for
+
+0 ==> numIn decimal
+10 ==> number1 decimal constant
+20 ==> number2 decimal constant
+
+START
+
+0==>result decimal
+```
+
+# Sample Program 3
+###
+
+```javascript
+
+FINISH
+
+
+START
+
+<<"Greg","Chris","Jack","Sarah","Luke","Natalie">> ==> racers text<<6>> constant
+
+
+
+
+
+```
