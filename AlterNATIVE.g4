@@ -18,7 +18,7 @@ program:
 	;
 
 functionDef:
-	(block|returnBlock) LPARENS (variable varType)? (COMMA variable varType)* RPARENS LABEL (varType array?|VOIDTYPE)
+	(block|returnBlock) LPARENS (variable varType)? (COMMA variable varType)* RPARENS LABEL (varType|VOIDTYPE)
 	;
 funCall:
 	LPARENS variable* RPARENS LABEL 'call'
