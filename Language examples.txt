@@ -16,14 +16,22 @@
 
 FINISH
 
-(end, start)getInput call
-()userinput ==> end decimal
-("Enter how far to go in the array: ")nloutput
-()userinput ==> start decimal
-("Enter where to start in the array: ")nloutput
-(noOfItems)userinput
-("Enter the amount of prices you would like to input: ")nloutput
-0 ==> noOfItems decimal
+
+  ->((arrayLength)-start << noOfItems)until
+    (noOfItems, start)getInput call
+    ()userinput ==> start decimal
+    ("Enter where to start in the array: ")nloutput
+  <-execute
+
+  ->(noOfItems >> arrayLength)until
+    ->
+      ("To many items! Enter " ++ (prices)quantity ++ " or less items.")nloutput
+    <-(noOfItems >> arrayLength)when
+    (noOfItems)userinput
+    ("Enter the amount of prices you would like to input: ")nloutput
+  <-execute
+  0 ==> noOfItems decimal
+  (prices)quantity ==> arrayLength decimal constant
 
 START
 //Main method
@@ -42,26 +50,25 @@ START
         ("Too high price, try again!")nloutput
       <-(price >> 100) or when
       ->
-        ("VAT applied, price added to array at index" ++ start)
+        ("VAT applied, price added to array at index" ++ start)nloutput
         true ==> isValid
         ++==>start
-        (price)applyVAT call ==> costArray<<start>>
+        (2,(price)applyVAT call)precision ==> costArray<<start>>
     	<-(price <<==> 100 and price >> 0) when
 
     	(price)userinput
     	("Enter the price (0-100): ")output
     <-(isValid !==> true)as long as
     false ==> isValid logical
-  <-(start <<==> noOfItems and (costArray)quantity )
+  <-(start <<==> noOfItems and start <<==> (costArray)quantity )as long as
   i ==> start decimal constant
-  j ==> end decimal constant
   items ==> noOfItems decimal constant
 <-(items decimal,j decimal)getInput void
 //Methods
 
 0 ==> price decimal
 0.212 ==> vat decimal constant
-<<>> ==> costArray decimal<<10>>
+<<>> ==> costArray decimal<<10>> nullable
 //Global variables
 ```
 
@@ -123,8 +130,11 @@ START
 ```javascript
 
 FINISH
-
-
+->
+  (firstThree<<i>>)nloutput
+<-(++==>i; i << (firstThree)quantity;0 ==> i decimal) for
+racers from (2,0) extract ==> firstThree text<<3>>
+("Greg finished the race at " ++ ("Greg")find ++ " place")nloutput
 START
 
 <<"Greg","Chris","Jack","Sarah","Luke","Natalie">> ==> racers text<<6>> constant
